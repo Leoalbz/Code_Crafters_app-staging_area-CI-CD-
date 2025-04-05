@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block titulo %}
+<title>Contacto</title>
+{% endblock %}
+
+{% block navegacion %}
+{% include 'nav_bar.html' %}
+{% endblock %}
+
+{% block contenido %}
+<section class="section has-background-dark" style="width: 50%; margin: 0 auto;">
+    <div class="field">
+        <h1 class="title is-1 text-center has-text-white">Contacto</h1>
+        <form method="POST" class="container has-text-white">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button is-primary has-text-white">Enviar</button>
+            <p class="subtitle is-5 has-text-white text-center">Nos contactaremos a la brevedad</p>
+        </form>
+    </div>
+</section>
+{% endblock %}

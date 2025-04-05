@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+*.log
+*.sqlite3
+db.sqlite3
+.env
+
+# Otros
+*.pyc
+*.pkl
+*.egg-info/
+dist/
+build/
+
+django-gcs-key.json
+gcs-key-base64.txt

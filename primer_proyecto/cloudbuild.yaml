@@ -1,0 +1,27 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/code-crafters-staging', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/code-crafters-staging']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        # Leer el secreto desde Secret Manager
+        SECRET=$(gcloud secrets versions access latest --secret=gcs-credentials-json)
+
+        # Desplegar en Cloud Run con variables
+        gcloud run deploy code-crafters-staging \
+          --image gcr.io/$PROJECT_ID/code-crafters-staging \
+          --region=us-central1 \
+          --platform=managed \
+          --add-cloudsql-instances=code-crafters-project-2025:us-central1:mi-db-instance2 \
+          --set-env-vars=\
+DATABASE_HOST=/cloudsql/code-crafters-project-2025:us-central1:mi-db-instance2,\
+DATABASE_USER=mi_usuario,\
+DATABASE_PASSWORD=mi_password,\
+DATABASE_NAME=mi-base-de-datos2,\
+GOOGLE_APPLICATION_CREDENTIALS_JSON="$SECRET"

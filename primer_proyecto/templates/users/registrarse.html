@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block titulo %}
+<title>Registro</title>
+{% endblock %}
+
+{% block navegacion %}
+{% include 'nav_bar.html' %}
+{% endblock %}
+
+{% block contenido %}
+<section class="section column has-text-white">
+
+    <h2 class="title is-1 has-text-white text-center">Crear una cuenta</h2>
+    <div class="column container" style="width: 50%; margin: 0 auto;">
+
+        <form class="column" style="margin: 0 auto;" id="registration-form" action="{% url 'users:registrarse' %}"
+            method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="column">
+                <label for="username">Nombre de usuario:</label>
+                <input class="input" type="text" id="username" name="username" maxlength="150" placeholder="Usuario"
+                    required pattern="[A-Za-z0-9@._+-]+">
+                <p class="has-text-white is-size-7"><strong class="is-size-6">Obligatorio</strong><br>Longitud máxima de
+                    150 caracteres<br>Solo puede estar formado por
+                    letras, números y los caracteres @/./+/-/_.</p>
+            </div>
+            <div class="column">
+                <label for="email">Email:</label>
+                <input class="input" type="email" id="email" name="email" placeholder="juan@ejemplo.com" required>
+            </div>
+
+            <div class="column">
+                <label for="password1">Contraseña:</label>
+                <input class="input" type="password" id="password1" name="password1" placeholder="Contraseña" required>
+                <p class="has-text-white is-size-7">Su contraseña no puede ser similar a otros componentes de su
+                    información
+                    personal.<br>
+                    Su contraseña debe contener por lo menos 8 caracteres.<br>
+                    Su contraseña no puede ser una contraseña usada muy comúnmente.<br>
+                    Su contraseña no puede estar formada exclusivamente por números.</p>
+            </div>
+
+            <div class="column">
+                <label for="password2">Confirmación de contraseña:</label>
+                <input class="input" type="password" id="password2" name="password2" placeholder="Confirme Contraseña"
+                    required>
+                <p class="has-text-white is-size-7">Introduzca la misma contraseña nuevamente, para poder verificar la
+                    misma.</p>
+            </div>
+
+            <div class="column">
+                <button class="button is-primary has-text-white mb-2 mt-2" type="submit">Registrarse</button>
+            </div>
+
+        </form>
+    </div>
+    <script>
+        document.getElementById('registration-form').addEventListener('submit', function (e) {
+            const password = document.getElementById('password1').value;
+            const confirmPassword = document.getElementById('password2').value;
+
+            if (password.length < 8) {
+                alert('La contraseña debe tener al menos 8 caracteres.');
+                e.preventDefault();
+                return;
+            }
+
+            if (/^\d+$/.test(password)) {
+                alert('La contraseña no puede estar formada exclusivamente por números.');
+                e.preventDefault();
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+
+</section>
+{% endblock %}
