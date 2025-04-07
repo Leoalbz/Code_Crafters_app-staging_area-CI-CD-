@@ -41,6 +41,6 @@ secrets:
     DB_USER: projects/code-crafters-project-2025/secrets/DB_USER/versions/latest
     DB_PASSWORD: projects/code-crafters-project-2025/secrets/DB_PASSWORD/versions/latest
     DB_NAME: projects/code-crafters-project-2025/secrets/DB_NAME/versions/latest
-    GOOGLE_APPLICATION_CREDENTIALS_JSON: projects/code-crafters-project-2025/secrets/GOOGLE_APPLICATION_CREDENTIALS_JSON/versions/latest
+    GOOGLE_APPLICATION_CREDENTIALS_JSON: projects/code-crafters-project-2025/secrets/gcs-credentials-json/versions/latest
 
 
