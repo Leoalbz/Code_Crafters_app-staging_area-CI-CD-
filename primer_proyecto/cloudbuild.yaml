@@ -1,27 +1,46 @@
 steps:
+  # Imagen Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/code-crafters-staging', '.']
+    args: [
+      'build',
+      '-t',
+      'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging',
+      '.'
+    ]
 
+  # Paso 2: Push imagen a Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/code-crafters-staging']
+    args: [
+      'push',
+      'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging'
+    ]
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: bash
+  # Despliegue a Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - -c
+      - '-c'
       - |
-        # Leer el secreto desde Secret Manager
-        SECRET=$(gcloud secrets versions access latest --secret=gcs-credentials-json)
-
-        # Desplegar en Cloud Run con variables
         gcloud run deploy code-crafters-staging \
-          --image gcr.io/$PROJECT_ID/code-crafters-staging \
+          --image=us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging \
           --region=us-central1 \
           --platform=managed \
-          --add-cloudsql-instances=code-crafters-project-2025:us-central1:mi-db-instance2 \
-          --set-env-vars=\
-DATABASE_HOST=/cloudsql/code-crafters-project-2025:us-central1:mi-db-instance2,\
-DATABASE_USER=mi_usuario,\
-DATABASE_PASSWORD=mi_password,\
-DATABASE_NAME=mi-base-de-datos2,\
-GOOGLE_APPLICATION_CREDENTIALS_JSON="$SECRET"
+          --allow-unauthenticated \
+          --set-env-vars="DATABASE_HOST=/cloudsql/code-crafters-project-2025:us-central1:mi-db-instance2,DATABASE_USER=$DB_USER,DATABASE_PASSWORD=$DB_PASSWORD,DATABASE_NAME=$DB_NAME,GOOGLE_APPLICATION_CREDENTIALS_JSON=$GOOGLE_APPLICATION_CREDENTIALS_JSON" \
+          --set-cloudsql-instances=code-crafters-project-2025:us-central1:mi-db-instance2
+    secretEnv: ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'GOOGLE_APPLICATION_CREDENTIALS_JSON']
+
+images:
+  - us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging
+
+
+# Secret Manager
+secrets:
+- kmsKeyName: projects/code-crafters-project-2025/locations/global/keyRings/cloudbuild/cryptoKeys/cloudbuild-key
+  secretEnv:
+    DB_USER: projects/code-crafters-project-2025/secrets/DB_USER/versions/latest
+    DB_PASSWORD: projects/code-crafters-project-2025/secrets/DB_PASSWORD/versions/latest
+    DB_NAME: projects/code-crafters-project-2025/secrets/DB_NAME/versions/latest
+    GOOGLE_APPLICATION_CREDENTIALS_JSON: projects/code-crafters-project-2025/secrets/GOOGLE_APPLICATION_CREDENTIALS_JSON/versions/latest
+
+
