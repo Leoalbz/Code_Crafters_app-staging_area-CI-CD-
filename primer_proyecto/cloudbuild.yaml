@@ -30,7 +30,7 @@ steps:
           --set-cloudsql-instances=code-crafters-project-2025:us-central1:mi-db-instance2
     secretEnv: ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'GOOGLE_APPLICATION_CREDENTIALS_JSON']
 
-images: #imagen en artifact registry
+images: #Artifact registry image
   - us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging
 
 
