@@ -1,23 +1,10 @@
 steps:
-  # Paso 1: Build de la imagen Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'build',
-        '-t',
-        'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging',
-        '.'
-      ]
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging', '.']
 
-  # Paso 2: Push de la imagen a Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'push',
-        'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging'
-      ]
+    args: ['push', 'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging']
 
-  # Paso 3: Despliegue a Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -28,17 +15,17 @@ steps:
           --region=us-central1 \
           --platform=managed \
           --allow-unauthenticated \
-          --set-env-vars="DATABASE_HOST=/cloudsql/code-crafters-project-2025:us-central1:mi-db-instance2,DATABASE_USER=$DB_USER,DATABASE_PASSWORD=$DB_PASSWORD,DATABASE_NAME=$DB_NAME,GOOGLE_APPLICATION_CREDENTIALS_JSON=$GOOGLE_APPLICATION_CREDENTIALS_JSON" \
+          --set-env-vars="DATABASE_HOST=/cloudsql/code-crafters-project-2025:us-central1:mi-db-instance2,DATABASE_USER=$$DB_USER,DATABASE_PASSWORD=$$DB_PASSWORD,DATABASE_NAME=$$DB_NAME,GOOGLE_APPLICATION_CREDENTIALS_JSON=$$GOOGLE_APPLICATION_CREDENTIALS_JSON" \
           --set-cloudsql-instances=code-crafters-project-2025:us-central1:mi-db-instance2
     secretEnv: ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'GOOGLE_APPLICATION_CREDENTIALS_JSON']
 
 images:
-  - us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging
+  - 'us-central1-docker.pkg.dev/code-crafters-project-2025/my-django-repo-staging/code-crafters-staging'
 
 secrets:
-  - kmsKeyName: projects/code-crafters-project-2025/locations/global/keyRings/cloudbuild/cryptoKeys/cloudbuild-key
-    secretEnv:
-      DB_USER: projects/code-crafters-project-2025/secrets/DB_USER/versions/latest
-      DB_PASSWORD: projects/code-crafters-project-2025/secrets/DB_PASSWORD/versions/latest
-      DB_NAME: projects/code-crafters-project-2025/secrets/DB_NAME/versions/latest
-      GOOGLE_APPLICATION_CREDENTIALS_JSON: projects/code-crafters-project-2025/secrets/gcs-credentials-json/versions/latest
+- kmsKeyName: projects/code-crafters-project-2025/locations/global/keyRings/cloudbuild/cryptoKeys/cloudbuild-key
+  secretEnv:
+    DB_USER: projects/code-crafters-project-2025/secrets/DB_USER/versions/latest
+    DB_PASSWORD: projects/code-crafters-project-2025/secrets/DB_PASSWORD/versions/latest
+    DB_NAME: projects/code-crafters-project-2025/secrets/DB_NAME/versions/latest
+    GOOGLE_APPLICATION_CREDENTIALS_JSON: projects/code-crafters-project-2025/secrets/gcs-credentials-json/versions/latest
