@@ -34,10 +34,14 @@ GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 GOOGLE_APPLICATION_CREDENTIALS_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
 if GOOGLE_APPLICATION_CREDENTIALS_JSON:
-    credentials_info = json.loads(
-        base64.b64decode(GOOGLE_APPLICATION_CREDENTIALS_JSON).decode("utf-8")
-    )
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_info)
+    try:
+        credentials_info = json.loads(
+            base64.b64decode(GOOGLE_APPLICATION_CREDENTIALS_JSON).decode("utf-8")
+        )
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_info)
+    except Exception as e:
+        print("Error cargando GOOGLE_APPLICATION_CREDENTIALS_JSON:", e)
+        GS_CREDENTIALS = None
 else:
     GS_CREDENTIALS = None
 
